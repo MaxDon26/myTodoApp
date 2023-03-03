@@ -1,5 +1,5 @@
 import { Alert, Snackbar } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 import { useSnack } from "../../hooks/useSnack";
 
 export const SnackBar = () => {

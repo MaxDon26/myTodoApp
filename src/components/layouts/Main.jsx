@@ -1,6 +1,5 @@
 import * as React from "react";
 import Paper from "@mui/material/Paper";
-import { Box } from "@mui/material";
 import { useTodos } from "../../store/store";
 
 import { TodoList } from "../ui/TodoList";
@@ -25,7 +24,7 @@ export default function Content() {
   }, [todosCrop]);
 
   return (
-    <Box height="100vh" component="main" sx={{ bgcolor: "#eaeff1", py: 5 }}>
+    <>
       <Paper sx={{ maxWidth: 936, margin: "auto", overflow: "hidden" }}>
         <AddForm />
         <TodoList todos={todosCrop} />
@@ -34,6 +33,6 @@ export default function Content() {
         values={{ todos, todosCrop, pageCount, setPage, page, count }}
       />
       <SnackBar />
-    </Box>
+    </>
   );
 }

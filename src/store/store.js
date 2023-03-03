@@ -39,12 +39,14 @@ export const useTodos = create(
       }
     },
     editTodo(id, content) {
+      set({ loading: true });
       const todo = get().todos.find((todo) => todo.id === id);
       if (content === todo.content) return;
       if (content !== "") {
         set((state) => {
           return {
             ...state,
+            loading: false,
             error: null,
             todos: state.todos.map((todo) =>
               todo.id === id ? { ...todo, content } : todo
@@ -52,7 +54,11 @@ export const useTodos = create(
           };
         });
       } else {
-        set((state) => ({ ...state, error: "Строка не должна быть пуста" }));
+        set((state) => ({
+          ...state,
+          loading: false,
+          error: "Строка не должна быть пуста",
+        }));
       }
     },
     getTodos() {
