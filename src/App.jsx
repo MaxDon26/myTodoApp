@@ -4,6 +4,7 @@ import Main from "./components/layouts/Main";
 import { Routes, Route } from "react-router-dom";
 import { Login } from "./components/layouts/Login";
 import { Box } from "@mui/material";
+import { SnackBar } from "./components/ui/SnackBar";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<Main />} />
             <Route path="/:type" element={<Login />} />
           </Routes>
+          <SnackBar />
         </Box>
       </SnackProvider>
     </div>

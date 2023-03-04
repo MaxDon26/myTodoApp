@@ -18,7 +18,7 @@ export const TodoItem = ({
   completed,
   content,
   created_at,
-  id,
+  _id,
   completedTodo,
   deleteTodo,
   editTodo,
@@ -34,7 +34,7 @@ export const TodoItem = ({
 
   return (
     <ListItem sx={{ justifyContent: "space-between" }} divider>
-      <CheckBox value={completed} onChange={() => completedTodo(id)} />
+      <CheckBox value={completed} onChange={() => completedTodo(_id)} />
       <Input
         value={text}
         disabled={!edit}
@@ -58,7 +58,7 @@ export const TodoItem = ({
           </IconButton>
         ) : (
           <IconButton
-            onClick={() => handleEdit(id)}
+            onClick={() => handleEdit(_id)}
             color="success"
             aria-label="edit"
           >
@@ -67,7 +67,7 @@ export const TodoItem = ({
         )}
       </>
       <IconButton
-        onClick={() => deleteTodo(id)}
+        onClick={() => deleteTodo(_id)}
         color="error"
         aria-label="delete"
       >

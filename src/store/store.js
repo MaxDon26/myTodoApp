@@ -2,57 +2,64 @@ import { nanoid } from "nanoid";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import _ from "lodash";
+import todosService from "../services/todos.service";
+import authService from "../services/auth.service";
+import localStorageService from "../services/localStorage.service";
 
 export const useTodos = create(
   devtools((set, get) => ({
-    todos: [
-      {
-        id: nanoid(),
-        content: "todo1",
-        completed: true,
-        created_at: Date.now(),
-      },
-    ],
+    todos: [],
     loading: false,
     error: null,
-    addTodo(content) {
-      if (content !== "") {
+    async fetchTodos(uid) {
+      set({ loading: true });
+      const { content } = await todosService.fetchAll(uid);
+      set({ loading: false, todos: content });
+    },
+    async addTodo(payload) {
+      if (payload !== "") {
         set({ loading: true });
-        window.setTimeout(function () {
+        try {
+          const newTodo = {
+            content: payload,
+            _id: nanoid(),
+            completed: false,
+            created_at: Date.now(),
+            userId: localStorageService.getUserId(),
+          };
+          const { content } = await todosService.create(newTodo);
+
           set((state) => {
-            const newTodo = {
-              content,
-              id: nanoid(),
-              completed: false,
-              created_at: Date.now(),
-            };
             return {
               ...state,
               loading: false,
               error: null,
-              todos: [...state.todos, newTodo],
+              todos: [...state.todos, content],
             };
           });
-        }, 2000);
+        } catch (error) {}
       } else {
         set((state) => ({ ...state, error: "Строка не должна быть пуста" }));
       }
     },
-    editTodo(id, content) {
+    async editTodo(id, content) {
       set({ loading: true });
-      const todo = get().todos.find((todo) => todo.id === id);
+      const todo = get().todos.find((todo) => todo._id === id);
       if (content === todo.content) return;
       if (content !== "") {
-        set((state) => {
-          return {
-            ...state,
-            loading: false,
-            error: null,
-            todos: state.todos.map((todo) =>
-              todo.id === id ? { ...todo, content } : todo
-            ),
-          };
-        });
+        try {
+          await todosService.edit({ _id: id, content });
+          set((state) => {
+            return {
+              ...state,
+              loading: false,
+              error: null,
+              todos: state.todos.map((todo) =>
+                todo._id === id ? { ...todo, content } : todo
+              ),
+            };
+          });
+        } catch (error) {}
       } else {
         set((state) => ({
           ...state,
@@ -64,20 +71,68 @@ export const useTodos = create(
     getTodos() {
       return _.orderBy(get().todos, "created_at", "desc");
     },
-    deleteTodo(id) {
-      set({ todos: get().todos.filter((todo) => todo.id !== id) });
+    async deleteTodo(id) {
+      await todosService.remove(id);
+      set({ todos: get().todos.filter((todo) => todo._id !== id) });
     },
     completedTodo(id) {
       set({
         todos: get().todos.map((todo) =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+          todo._id === id ? { ...todo, completed: !todo.completed } : todo
         ),
       });
     },
-    removeSelected() {
+    async removeSelected() {
+      const filtredTodos = get().todos.filter((todo) => todo.completed);
+      filtredTodos.forEach(async (todo) => {
+        await todosService.remove(todo._id);
+      });
       set({
         todos: get().todos.filter((todo) => !todo.completed),
       });
+    },
+  }))
+);
+
+export const useAuth = create(
+  devtools((set, get) => ({
+    currentUser: localStorageService.getAccessToken()
+      ? { userId: localStorageService.getUserId() }
+      : null,
+    loading: false,
+    error: null,
+    isAuth: !!localStorageService.getAccessToken() || false,
+    async register(payload) {
+      try {
+        set({ loading: true });
+
+        const data = await authService.register(payload);
+        set({
+          currentUser: { email: data.email, _id: data.localId },
+          isAuth: true,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async login(payload) {
+      try {
+        set({ loading: true });
+        const data = await authService.login(payload);
+
+        set({
+          currentUser: { email: data.email, _id: data.localId },
+          isAuth: true,
+        });
+        return data;
+      } catch (error) {
+        set({ error: error.response.data.error });
+        return get().error;
+      }
+    },
+    logout() {
+      localStorageService.removeAuthData();
+      set({ isAuth: false, currentUser: null });
     },
   }))
 );

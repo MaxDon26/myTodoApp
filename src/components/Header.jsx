@@ -13,12 +13,14 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../store/store";
 
 const pages = [];
 const settings = ["Logout"];
 
 function ResponsiveAppBar() {
-  const auth = false;
+  const auth = useAuth().isAuth;
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -36,6 +38,11 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleOut = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -152,7 +159,9 @@ function ResponsiveAppBar() {
               >
                 {settings.map((setting) => (
                   <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                    <Typography textAlign="center" onClick={handleOut}>
+                      {setting}
+                    </Typography>
                   </MenuItem>
                 ))}
               </Menu>

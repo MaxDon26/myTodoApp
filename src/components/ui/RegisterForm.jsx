@@ -1,11 +1,15 @@
 import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import * as yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../store/store";
 
 export const RegisterForm = () => {
   const [errors, setError] = useState({});
   const [data, setData] = useState({ emeil: "", password: "" });
+  const { register } = useAuth();
+
+  const navigate = useNavigate();
 
   const validationSchema = yup.object().shape({
     password: yup.string().required("Password is required").min(8),
@@ -34,6 +38,12 @@ export const RegisterForm = () => {
   useEffect(() => {
     validate();
   }, [data]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    register(data).then(() => navigate("/"));
+  };
   return (
     <>
       {" "}
@@ -47,11 +57,12 @@ export const RegisterForm = () => {
       >
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }} />
         <Typography component="h1" variant="h5" color="#000">
-          Sign in
+          Sign up
         </Typography>
       </Box>
       <Box
         component="form"
+        onSubmit={handleSubmit}
         sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 3 }}
       >
         <TextField
@@ -79,12 +90,12 @@ export const RegisterForm = () => {
           onChange={handleChange}
         />
 
-        <Button disabled={!isValid} variant="contained">
+        <Button type="submit" disabled={!isValid} variant="contained">
           Sign up
         </Button>
       </Box>
       <Typography variant="a">
-        Do you have account? <Link to="/login">Sign up</Link>{" "}
+        Do you have account? <Link to="/login">Sign in</Link>{" "}
       </Typography>
     </>
   );
