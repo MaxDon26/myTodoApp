@@ -1,10 +1,26 @@
-import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/store";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 export const LoginForm = () => {
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   const [errors, setError] = useState({});
   const [data, setData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
@@ -20,10 +36,8 @@ export const LoginForm = () => {
   const validate = async () => {
     try {
       await validationSchema.validate(data);
-
       setError({});
     } catch (error) {
-      console.log(errors);
       setError({ [error.path]: error.message });
     }
   };
@@ -50,7 +64,6 @@ export const LoginForm = () => {
           setError({ password: "Invalid password" });
         }
       } else if (data.localId) {
-        console.log(data);
         setError({});
         navigate("/");
       }
@@ -79,6 +92,7 @@ export const LoginForm = () => {
       >
         <TextField
           name="email"
+          // autoComplete="off"1
           id="outlined-email"
           error={!!errors.email}
           required
@@ -97,9 +111,35 @@ export const LoginForm = () => {
           label="Password"
           variant="outlined"
           value={data.password}
-          type="password"
           helperText={errors?.password}
           onChange={handleChange}
+          type={showPassword ? "text" : "password"}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment sx={{ bgcolor: "inherit" }} position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle password visibility"
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          }
         />
 
         <Button disabled={!isValid} type="submit" variant="contained">

@@ -20,6 +20,8 @@ const settings = ["Logout"];
 
 function ResponsiveAppBar() {
   const auth = useAuth().isAuth;
+  const currentUser = useAuth().currentUser;
+
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -46,7 +48,7 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="error">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
@@ -135,7 +137,17 @@ function ResponsiveAppBar() {
             ))}
           </Box>
           {auth ? (
-            <Box sx={{ flexGrow: 0 }}>
+            <Box
+              sx={{
+                flexGrow: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: 3,
+              }}
+            >
+              <Tooltip>
+                <Typography>{currentUser.email}</Typography>
+              </Tooltip>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="" />

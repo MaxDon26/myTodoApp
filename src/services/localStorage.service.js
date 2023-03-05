@@ -6,6 +6,7 @@ const USERID_KEY = "user-local-id";
 export function setTokens({
   refreshToken,
   localId,
+  email,
   idToken,
   expiresIn = 3600,
 }) {
@@ -14,7 +15,9 @@ export function setTokens({
   localStorage.setItem(REFRESH_KEY, refreshToken);
   localStorage.setItem(EXPIRES_KEY, expiresDate);
   localStorage.setItem(USERID_KEY, localId);
+  localStorage.setItem("currentUser", JSON.stringify({ email, localId }));
 }
+
 export function getAccessToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -23,6 +26,10 @@ export function getRefreshToken() {
 }
 export function getTokenExpiresDate() {
   return localStorage.getItem(EXPIRES_KEY);
+}
+
+export function getCurrentUser() {
+  return JSON.parse(localStorage.getItem("currentUser"));
 }
 
 export function getUserId() {
@@ -42,6 +49,7 @@ const localStorageService = {
   getRefreshToken,
   getTokenExpiresDate,
   getUserId,
+  getCurrentUser,
   removeAuthData,
 };
 export default localStorageService;

@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import { Login } from "./components/layouts/Login";
 import { Box } from "@mui/material";
 import { SnackBar } from "./components/ui/SnackBar";
+import { useEffect } from "react";
 
 function App() {
   return (

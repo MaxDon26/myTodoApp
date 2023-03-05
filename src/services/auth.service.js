@@ -22,6 +22,7 @@ const authService = {
       ...payload,
       returnSecureToken: true,
     });
+
     localStorageService.setTokens(data);
     return data;
   },

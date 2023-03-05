@@ -97,7 +97,7 @@ export const useTodos = create(
 export const useAuth = create(
   devtools((set, get) => ({
     currentUser: localStorageService.getAccessToken()
-      ? { userId: localStorageService.getUserId() }
+      ? localStorageService.getCurrentUser()
       : null,
     loading: false,
     error: null,
