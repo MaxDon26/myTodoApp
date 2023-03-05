@@ -1,4 +1,4 @@
-import { List } from "@mui/material";
+import { List, Typography } from "@mui/material";
 import { TodoItem } from "./TodoItem";
 import { useTodos } from "../../store/store";
 import React from "react";
@@ -13,15 +13,21 @@ export const TodoList = ({ todos }) => {
   return (
     <List style={{ paddingBottom: 0 }}>
       {loading && <Skeleton />}
-      {todos.map((todo) => (
-        <TodoItem
-          key={todo.id}
-          {...todo}
-          completedTodo={completedTodo}
-          deleteTodo={deleteTodo}
-          editTodo={editTodo}
-        />
-      ))}
+      {todos.length > 0
+        ? todos.map((todo) => (
+            <TodoItem
+              key={todo._id}
+              {...todo}
+              completedTodo={completedTodo}
+              deleteTodo={deleteTodo}
+              editTodo={editTodo}
+            />
+          ))
+        : !loading && (
+            <Typography sx={{ textAlign: "center", color: "gray", py: 5 }}>
+              List Empty
+            </Typography>
+          )}
     </List>
   );
 };
